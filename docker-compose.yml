@@ -10,6 +10,32 @@ services:
       - "5432:5432"
     volumes:
       - brindes_postgres_data:/var/lib/postgresql/data
+    networks:
+      - brindes-network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: brindes-api
+    depends_on:
+      - postgres
+    environment:
+      SERVER_PORT: 8080
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/brindesdb
+      SPRING_DATASOURCE_USERNAME: brindes
+      SPRING_DATASOURCE_PASSWORD: brindes
+      SPRING_JPA_SHOW_SQL: "true"
+      APP_JWT_SECRET: brindes-manager-api-secret-key-local-development-precisa-ter-tamanho-grande-123456789
+      APP_JWT_EXPIRATION_MS: 86400000
+    ports:
+      - "8080:8080"
+    networks:
+      - brindes-network
 
 volumes:
   brindes_postgres_data:
+
+networks:
+  brindes-network:
+    driver: bridge
