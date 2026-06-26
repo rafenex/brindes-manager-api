@@ -61,13 +61,16 @@ public class CategoryService {
         category.setName(request.name());
         category.setDescription(request.description());
 
-        return toResponse(category);
+        Category updatedCategory = categoryRepository.save(category);
+
+        return toResponse(updatedCategory);
     }
 
     @Transactional
     public void delete(Long id) {
         Category category = findActiveCategoryById(id);
         category.setActive(false);
+        categoryRepository.save(category);
     }
 
     private Category findActiveCategoryById(Long id) {
