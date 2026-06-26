@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -60,6 +61,7 @@ public class CategoryService {
 
         category.setName(request.name());
         category.setDescription(request.description());
+        category.setUpdatedAt(LocalDateTime.now());
 
         Category updatedCategory = categoryRepository.save(category);
 
@@ -70,10 +72,11 @@ public class CategoryService {
     public void delete(Long id) {
         Category category = findActiveCategoryById(id);
         category.setActive(false);
+        category.setUpdatedAt(LocalDateTime.now());
         categoryRepository.save(category);
     }
 
-    private Category findActiveCategoryById(Long id) {
+    public  Category findActiveCategoryById(Long id) {
         return categoryRepository.findByIdAndActiveTrue(id)
                 .orElseThrow(() -> new NotFoundException("Categoria não encontrada"));
     }
