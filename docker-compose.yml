@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: brindes-postgres
+    environment:
+      POSTGRES_DB: brindesdb
+      POSTGRES_USER: brindes
+      POSTGRES_PASSWORD: brindes
+    ports:
+      - "5432:5432"
+    volumes:
+      - brindes_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  brindes_postgres_data:
