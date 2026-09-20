@@ -1,0 +1,62 @@
+services:
+
+  postgres:
+    image: postgres:16
+    container_name: brindes-postgres-dev
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+    ports:
+      - "127.0.0.1:5432:5432"
+
+    volumes:
+      - brindes_postgres_dev_data:/var/lib/postgresql/data
+
+    networks:
+      - brindes-dev-network
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: brindes-api-dev
+    restart: unless-stopped
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    environment:
+      SERVER_PORT: 8080
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+
+      SPRING_JPA_SHOW_SQL: "false"
+
+      APP_JWT_SECRET: ${JWT_SECRET}
+      APP_JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS}
+
+    ports:
+      - "127.0.0.1:8080:8080"
+
+    networks:
+      - brindes-dev-network
+
+volumes:
+  brindes_postgres_dev_data:
+
+networks:
+  brindes-dev-network:
+    driver: bridge
