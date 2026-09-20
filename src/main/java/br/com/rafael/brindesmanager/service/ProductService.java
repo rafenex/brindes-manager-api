@@ -1,6 +1,7 @@
 package br.com.rafael.brindesmanager.service;
 
 import br.com.rafael.brindesmanager.dto.request.ProductRequest;
+import br.com.rafael.brindesmanager.dto.response.ProductDropdownResponse;
 import br.com.rafael.brindesmanager.dto.response.ProductResponse;
 import br.com.rafael.brindesmanager.entity.Category;
 import br.com.rafael.brindesmanager.entity.Product;
@@ -113,5 +114,19 @@ public class ProductService {
                 product.getCreatedAt(),
                 product.getUpdatedAt()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductDropdownResponse> findAllDropdown() {
+        return productRepository.findAllByOrderByNameAsc()
+                .stream()
+                .map(product -> new ProductDropdownResponse(
+                        product.getId(),
+                        product.getReference(),
+                        product.getName(),
+                        product.getBasePrice(),
+                        product.getActive()
+                ))
+                .toList();
     }
 }

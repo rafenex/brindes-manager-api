@@ -1,6 +1,7 @@
 package br.com.rafael.brindesmanager.controller;
 
 import br.com.rafael.brindesmanager.dto.request.CategoryRequest;
+import br.com.rafael.brindesmanager.dto.response.CategoryDropdownResponse;
 import br.com.rafael.brindesmanager.dto.response.CategoryResponse;
 import br.com.rafael.brindesmanager.service.CategoryService;
 import jakarta.validation.Valid;
@@ -45,5 +46,10 @@ public class CategoryController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         categoryService.delete(id);
+    }
+
+    @GetMapping("/dropdown")
+    public List<CategoryDropdownResponse> findAllDropdown() {
+        return categoryService.findAllDropdown();
     }
 }

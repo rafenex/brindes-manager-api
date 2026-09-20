@@ -1,6 +1,7 @@
 package br.com.rafael.brindesmanager.service;
 
 import br.com.rafael.brindesmanager.dto.request.CategoryRequest;
+import br.com.rafael.brindesmanager.dto.response.CategoryDropdownResponse;
 import br.com.rafael.brindesmanager.dto.response.CategoryResponse;
 import br.com.rafael.brindesmanager.entity.Category;
 import br.com.rafael.brindesmanager.exception.BusinessException;
@@ -90,5 +91,17 @@ public class CategoryService {
                 category.getCreatedAt(),
                 category.getUpdatedAt()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<CategoryDropdownResponse> findAllDropdown() {
+        return categoryRepository.findAllByOrderByNameAsc()
+                .stream()
+                .map(category -> new CategoryDropdownResponse(
+                        category.getId(),
+                        category.getName(),
+                        category.getActive()
+                ))
+                .toList();
     }
 }

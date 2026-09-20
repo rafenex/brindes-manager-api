@@ -1,6 +1,7 @@
 package br.com.rafael.brindesmanager.service;
 
 import br.com.rafael.brindesmanager.dto.request.CustomerRequest;
+import br.com.rafael.brindesmanager.dto.response.CustomerDropdownResponse;
 import br.com.rafael.brindesmanager.dto.response.CustomerResponse;
 import br.com.rafael.brindesmanager.entity.AppUser;
 import br.com.rafael.brindesmanager.entity.Customer;
@@ -111,5 +112,20 @@ public class CustomerService {
                 customer.getCreatedAt(),
                 customer.getUpdatedAt()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<CustomerDropdownResponse> findAllDropdown() {
+        Long userId = currentUserService.getCurrentUserId();
+
+        return customerRepository.findAllByUserIdOrderByNameAsc(userId)
+                .stream()
+                .map(customer -> new CustomerDropdownResponse(
+                        customer.getId(),
+                        customer.getName(),
+                        customer.getCompanyName(),
+                        customer.getActive()
+                ))
+                .toList();
     }
 }
