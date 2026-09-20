@@ -79,7 +79,7 @@ public class OrderPdfService {
         table.setWidths(new float[]{1, 2});
 
         addInfoRow(table, "Código", order.getCode());
-        addInfoRow(table, "Status", order.getStatus().name());
+        addInfoRow(table, "Status", order.getStatus().getDescription());
         addInfoRow(table, "Data", order.getCreatedAt().format(DATE_TIME_FORMATTER));
         addInfoRow(table, "Vendedor", order.getUser().getName());
 

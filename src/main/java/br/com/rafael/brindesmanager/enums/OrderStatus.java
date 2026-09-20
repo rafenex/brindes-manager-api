@@ -1,9 +1,20 @@
 package br.com.rafael.brindesmanager.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum OrderStatus {
-    BUDGET,
-    APPROVED,
-    IN_PRODUCTION,
-    DELIVERED,
-    CANCELED
+
+    BUDGET("Orçamento"),
+    APPROVED("Aprovado"),
+    IN_PRODUCTION("Em produção"),
+    DELIVERED("Entregue"),
+    CANCELED("Cancelado");
+
+    private final String description;
+
+    OrderStatus(String description) {
+        this.description = description;
+    }
+
 }
