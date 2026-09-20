@@ -39,7 +39,7 @@ public class CustomerOrderService {
                 .totalAmount(BigDecimal.ZERO)
                 .build();
 
-        return getCustomerOrderResponse(request, order);
+        return getCustomerOrderResponse(request, order, true);
     }
 
     @Transactional(readOnly = true)
@@ -59,9 +59,17 @@ public class CustomerOrderService {
     }
 
     @Transactional
-    public CustomerOrderResponse update(Long id, CustomerOrderRequest request) {
-        CustomerOrder order = findActiveOrderByIdAndCurrentUser(id);
-        Customer customer = customerService.findActiveCustomerByIdAndCurrentUser(request.customerId());
+    public CustomerOrderResponse update(
+            Long id,
+            CustomerOrderRequest request
+    ) {
+        CustomerOrder order =
+                findActiveOrderByIdAndCurrentUser(id);
+
+        Customer customer =
+                customerService.findCustomerByIdAndCurrentUser(
+                        request.customerId()
+                );
 
         order.setCustomer(customer);
         order.setNotes(request.notes());
@@ -69,14 +77,30 @@ public class CustomerOrderService {
 
         order.clearItems();
 
-        return getCustomerOrderResponse(request, order);
+        return getCustomerOrderResponse(request, order, false);
     }
 
-    private CustomerOrderResponse getCustomerOrderResponse(CustomerOrderRequest request, CustomerOrder order) {
-        for (OrderItemRequest itemRequest : request.items()) {
-            Product product = productService.findActiveProductById(itemRequest.productId());
+    private CustomerOrderResponse getCustomerOrderResponse(
+            CustomerOrderRequest request,
+            CustomerOrder order,
+            boolean onlyActiveProducts
+    ) {
 
-            BigDecimal itemTotal = calculateItemTotal(itemRequest.quantity(), itemRequest.unitPrice());
+        for (OrderItemRequest itemRequest : request.items()) {
+
+            Product product = onlyActiveProducts
+                    ? productService.findActiveProductById(
+                    itemRequest.productId()
+            )
+                    : productService.findByProductId(
+                    itemRequest.productId()
+            );
+
+            BigDecimal itemTotal =
+                    calculateItemTotal(
+                            itemRequest.quantity(),
+                            itemRequest.unitPrice()
+                    );
 
             OrderItem item = OrderItem.builder()
                     .product(product)
@@ -89,9 +113,12 @@ public class CustomerOrderService {
             order.addItem(item);
         }
 
-        order.setTotalAmount(calculateOrderTotal(order.getItems()));
+        order.setTotalAmount(
+                calculateOrderTotal(order.getItems())
+        );
 
-        CustomerOrder updatedOrder = customerOrderRepository.save(order);
+        CustomerOrder updatedOrder =
+                customerOrderRepository.save(order);
 
         return toResponse(updatedOrder);
     }
@@ -173,4 +200,7 @@ public class CustomerOrderService {
                 item.getCustomDescription()
         );
     }
+
+
+
 }

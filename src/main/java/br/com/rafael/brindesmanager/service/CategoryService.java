@@ -104,4 +104,9 @@ public class CategoryService {
                 ))
                 .toList();
     }
+
+    public Category findByCategoryId(Long id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Categoria não encontrada"));
+    }
 }

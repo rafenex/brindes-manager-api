@@ -128,4 +128,13 @@ public class CustomerService {
                 ))
                 .toList();
     }
+
+    public Customer findCustomerByIdAndCurrentUser(Long id) {
+        Long userId = currentUserService.getCurrentUserId();
+
+        return customerRepository.findByIdAndUserId(id, userId)
+                .orElseThrow(() ->
+                        new NotFoundException("Cliente não encontrado")
+                );
+    }
 }

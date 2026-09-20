@@ -74,7 +74,7 @@ public class ProductService {
             throw new BusinessException("Já existe um produto com essa referência");
         }
 
-        Category category = categoryService.findActiveCategoryById(request.categoryId());
+        Category category = categoryService.findByCategoryId(request.categoryId());
 
         product.setReference(request.reference());
         product.setName(request.name());
@@ -129,4 +129,13 @@ public class ProductService {
                 ))
                 .toList();
     }
+
+    public Product findByProductId(Long id) {
+        return productRepository.findById(id)
+                .orElseThrow(() ->
+                        new NotFoundException("Produto não encontrado")
+                );
+    }
+
+
 }
