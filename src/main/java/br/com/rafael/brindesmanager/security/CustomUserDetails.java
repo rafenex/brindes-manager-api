@@ -64,4 +64,9 @@ public class CustomUserDetails implements UserDetails {
     public boolean isEnabled() {
         return Boolean.TRUE.equals(user.getActive());
     }
+
+    public Long getCompanyId() {
+        return user.getCompany().getId();
+    }
+
 }

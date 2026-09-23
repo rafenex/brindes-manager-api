@@ -45,6 +45,10 @@ public class Customer {
 
     private LocalDateTime updatedAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id", nullable = false)
+    private Company company;
+
     @PrePersist
     public void prePersist() {
         this.active = true;

@@ -33,18 +33,18 @@ public class CustomerService {
                 .email(request.email())
                 .phone(request.phone())
                 .user(user)
+                .company(user.getCompany())
                 .build();
 
-        Customer savedCustomer = customerRepository.save(customer);
-
-        return toResponse(savedCustomer);
+        return toResponse(customerRepository.save(customer));
     }
 
     @Transactional(readOnly = true)
     public List<CustomerResponse> findAll() {
-        Long userId = currentUserService.getCurrentUserId();
+        Long companyId = currentUserService.getCurrentCompanyId();
 
-        return customerRepository.findAllByUserIdAndActiveTrueOrderByNameAsc(userId)
+        return customerRepository
+                .findAllByCompanyIdAndActiveTrueOrderByNameAsc(companyId)
                 .stream()
                 .map(this::toResponse)
                 .toList();
@@ -52,18 +52,16 @@ public class CustomerService {
 
     @Transactional(readOnly = true)
     public CustomerResponse findById(Long id) {
-        Long userId = currentUserService.getCurrentUserId();
+        Long companyId = currentUserService.getCurrentCompanyId();
 
-        Customer customer = findActiveCustomerByIdAndUser(id, userId);
-
-        return toResponse(customer);
+        return toResponse(findActiveCustomerByIdAndCompany(id, companyId));
     }
 
     @Transactional
     public CustomerResponse update(Long id, CustomerRequest request) {
-        Long userId = currentUserService.getCurrentUserId();
+        Long companyId = currentUserService.getCurrentCompanyId();
 
-        Customer customer = findActiveCustomerByIdAndUser(id, userId);
+        Customer customer = findActiveCustomerByIdAndCompany(id, companyId);
 
         customer.setName(request.name());
         customer.setCompanyName(request.companyName());
@@ -72,16 +70,14 @@ public class CustomerService {
         customer.setPhone(request.phone());
         customer.setUpdatedAt(LocalDateTime.now());
 
-        Customer updatedCustomer = customerRepository.save(customer);
-
-        return toResponse(updatedCustomer);
+        return toResponse(customerRepository.save(customer));
     }
 
     @Transactional
     public void delete(Long id) {
-        Long userId = currentUserService.getCurrentUserId();
+        Long companyId = currentUserService.getCurrentCompanyId();
 
-        Customer customer = findActiveCustomerByIdAndUser(id, userId);
+        Customer customer = findActiveCustomerByIdAndCompany(id, companyId);
 
         customer.setActive(false);
         customer.setUpdatedAt(LocalDateTime.now());
@@ -90,13 +86,41 @@ public class CustomerService {
     }
 
     public Customer findActiveCustomerByIdAndCurrentUser(Long id) {
-        Long userId = currentUserService.getCurrentUserId();
-        return findActiveCustomerByIdAndUser(id, userId);
+        Long companyId = currentUserService.getCurrentCompanyId();
+
+        return findActiveCustomerByIdAndCompany(id, companyId);
     }
 
-    private Customer findActiveCustomerByIdAndUser(Long id, Long userId) {
-        return customerRepository.findByIdAndUserIdAndActiveTrue(id, userId)
+    private Customer findActiveCustomerByIdAndCompany(Long id, Long companyId) {
+        return customerRepository
+                .findByIdAndCompanyIdAndActiveTrue(id, companyId)
                 .orElseThrow(() -> new NotFoundException("Cliente não encontrado"));
+    }
+
+    @Transactional(readOnly = true)
+    public List<CustomerDropdownResponse> findAllDropdown() {
+        Long companyId = currentUserService.getCurrentCompanyId();
+
+        return customerRepository
+                .findAllByCompanyIdOrderByNameAsc(companyId)
+                .stream()
+                .map(customer -> new CustomerDropdownResponse(
+                        customer.getId(),
+                        customer.getName(),
+                        customer.getCompanyName(),
+                        customer.getActive()
+                ))
+                .toList();
+    }
+
+    public Customer findCustomerByIdAndCurrentUser(Long id) {
+        Long companyId = currentUserService.getCurrentCompanyId();
+
+        return customerRepository
+                .findByIdAndCompanyId(id, companyId)
+                .orElseThrow(() ->
+                        new NotFoundException("Cliente não encontrado")
+                );
     }
 
     private CustomerResponse toResponse(Customer customer) {
@@ -112,29 +136,5 @@ public class CustomerService {
                 customer.getCreatedAt(),
                 customer.getUpdatedAt()
         );
-    }
-
-    @Transactional(readOnly = true)
-    public List<CustomerDropdownResponse> findAllDropdown() {
-        Long userId = currentUserService.getCurrentUserId();
-
-        return customerRepository.findAllByUserIdOrderByNameAsc(userId)
-                .stream()
-                .map(customer -> new CustomerDropdownResponse(
-                        customer.getId(),
-                        customer.getName(),
-                        customer.getCompanyName(),
-                        customer.getActive()
-                ))
-                .toList();
-    }
-
-    public Customer findCustomerByIdAndCurrentUser(Long id) {
-        Long userId = currentUserService.getCurrentUserId();
-
-        return customerRepository.findByIdAndUserId(id, userId)
-                .orElseThrow(() ->
-                        new NotFoundException("Cliente não encontrado")
-                );
     }
 }

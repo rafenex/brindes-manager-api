@@ -56,7 +56,7 @@ public class OrderPdfService {
         Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
         Font subtitleFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
 
-        Paragraph title = new Paragraph("RAFAEL BRINDES", titleFont);
+        Paragraph title = new Paragraph("DVR BRINDES", titleFont);
         title.setAlignment(Element.ALIGN_CENTER);
         document.add(title);
 
