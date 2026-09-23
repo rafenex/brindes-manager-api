@@ -5,7 +5,11 @@ import br.com.rafael.brindesmanager.dto.request.OrderItemRequest;
 import br.com.rafael.brindesmanager.dto.request.UpdateOrderStatusRequest;
 import br.com.rafael.brindesmanager.dto.response.CustomerOrderResponse;
 import br.com.rafael.brindesmanager.dto.response.OrderItemResponse;
-import br.com.rafael.brindesmanager.entity.*;
+import br.com.rafael.brindesmanager.entity.AppUser;
+import br.com.rafael.brindesmanager.entity.Customer;
+import br.com.rafael.brindesmanager.entity.CustomerOrder;
+import br.com.rafael.brindesmanager.entity.OrderItem;
+import br.com.rafael.brindesmanager.entity.Product;
 import br.com.rafael.brindesmanager.exception.NotFoundException;
 import br.com.rafael.brindesmanager.repository.CustomerOrderRepository;
 import br.com.rafael.brindesmanager.security.CurrentUserService;
@@ -29,12 +33,17 @@ public class CustomerOrderService {
     @Transactional
     public CustomerOrderResponse create(CustomerOrderRequest request) {
         AppUser user = currentUserService.getCurrentUser();
-        Customer customer = customerService.findActiveCustomerByIdAndCurrentUser(request.customerId());
+
+        Customer customer =
+                customerService.findActiveCustomerByIdAndCurrentUser(
+                        request.customerId()
+                );
 
         CustomerOrder order = CustomerOrder.builder()
                 .code(generateOrderCode())
                 .customer(customer)
                 .user(user)
+                .company(user.getCompany())
                 .notes(request.notes())
                 .totalAmount(BigDecimal.ZERO)
                 .build();
@@ -44,9 +53,10 @@ public class CustomerOrderService {
 
     @Transactional(readOnly = true)
     public List<CustomerOrderResponse> findAll() {
-        Long userId = currentUserService.getCurrentUserId();
+        Long companyId = currentUserService.getCurrentCompanyId();
 
-        return customerOrderRepository.findAllByUserIdAndActiveTrueOrderByCreatedAtDesc(userId)
+        return customerOrderRepository
+                .findAllByCompanyIdAndActiveTrueOrderByCreatedAtDesc(companyId)
                 .stream()
                 .map(this::toResponse)
                 .toList();
@@ -55,6 +65,7 @@ public class CustomerOrderService {
     @Transactional(readOnly = true)
     public CustomerOrderResponse findById(Long id) {
         CustomerOrder order = findActiveOrderByIdAndCurrentUser(id);
+
         return toResponse(order);
     }
 
@@ -124,20 +135,26 @@ public class CustomerOrderService {
     }
 
     @Transactional
-    public CustomerOrderResponse updateStatus(Long id, UpdateOrderStatusRequest request) {
-        CustomerOrder order = findActiveOrderByIdAndCurrentUser(id);
+    public CustomerOrderResponse updateStatus(
+            Long id,
+            UpdateOrderStatusRequest request
+    ) {
+        CustomerOrder order =
+                findActiveOrderByIdAndCurrentUser(id);
 
         order.setStatus(request.status());
         order.setUpdatedAt(LocalDateTime.now());
 
-        CustomerOrder updatedOrder = customerOrderRepository.save(order);
+        CustomerOrder updatedOrder =
+                customerOrderRepository.save(order);
 
         return toResponse(updatedOrder);
     }
 
     @Transactional
     public void delete(Long id) {
-        CustomerOrder order = findActiveOrderByIdAndCurrentUser(id);
+        CustomerOrder order =
+                findActiveOrderByIdAndCurrentUser(id);
 
         order.setActive(false);
         order.setUpdatedAt(LocalDateTime.now());
@@ -146,14 +163,22 @@ public class CustomerOrderService {
     }
 
     public CustomerOrder findActiveOrderByIdAndCurrentUser(Long id) {
-        Long userId = currentUserService.getCurrentUserId();
+        Long companyId = currentUserService.getCurrentCompanyId();
 
-        return customerOrderRepository.findByIdAndUserIdAndActiveTrue(id, userId)
-                .orElseThrow(() -> new NotFoundException("Pedido não encontrado"));
+        return customerOrderRepository
+                .findByIdAndCompanyIdAndActiveTrue(id, companyId)
+                .orElseThrow(() ->
+                        new NotFoundException("Pedido não encontrado")
+                );
     }
 
-    private BigDecimal calculateItemTotal(Integer quantity, BigDecimal unitPrice) {
-        return unitPrice.multiply(BigDecimal.valueOf(quantity));
+    private BigDecimal calculateItemTotal(
+            Integer quantity,
+            BigDecimal unitPrice
+    ) {
+        return unitPrice.multiply(
+                BigDecimal.valueOf(quantity)
+        );
     }
 
     private BigDecimal calculateOrderTotal(List<OrderItem> items) {
@@ -167,6 +192,7 @@ public class CustomerOrderService {
     }
 
     private CustomerOrderResponse toResponse(CustomerOrder order) {
+
         List<OrderItemResponse> items = order.getItems()
                 .stream()
                 .map(this::toItemResponse)
@@ -200,7 +226,4 @@ public class CustomerOrderService {
                 item.getCustomDescription()
         );
     }
-
-
-
 }
