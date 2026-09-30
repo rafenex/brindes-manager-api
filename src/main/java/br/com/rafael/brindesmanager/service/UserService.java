@@ -12,6 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -50,5 +52,16 @@ public class UserService {
                 user.getRole().name(),
                 user.getActive()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserResponse> findAll() {
+        Long companyId = currentUserService.getCurrentCompanyId();
+
+        return appUserRepository
+                .findAllByCompanyIdOrderByNameAsc(companyId)
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 }

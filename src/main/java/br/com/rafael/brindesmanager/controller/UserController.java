@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -21,5 +23,10 @@ public class UserController {
             @RequestBody @Valid CreateUserRequest request
     ) {
         return userService.create(request);
+    }
+
+    @GetMapping
+    public List<UserResponse> findAll() {
+        return userService.findAll();
     }
 }
