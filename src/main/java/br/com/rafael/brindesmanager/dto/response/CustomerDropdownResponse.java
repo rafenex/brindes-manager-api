@@ -4,6 +4,7 @@ public record CustomerDropdownResponse(
         Long id,
         String name,
         String companyName,
+        String address,
         Boolean active
 ) {
 }

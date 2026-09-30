@@ -104,12 +104,13 @@ public class CustomerService {
         Long companyId = currentUserService.getCurrentCompanyId();
 
         return customerRepository
-                .findAllByCompanyIdOrderByNameAsc(companyId)
+                .findAllByCompanyIdOrderByCompanyNameAsc(companyId)
                 .stream()
                 .map(customer -> new CustomerDropdownResponse(
                         customer.getId(),
                         customer.getName(),
                         customer.getCompanyName(),
+                        customer.getAddress(),
                         customer.getActive()
                 ))
                 .toList();
