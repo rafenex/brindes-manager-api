@@ -18,11 +18,14 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 150)
+    @Column(length = 150)
     private String name;
 
-    @Column(length = 150)
+    @Column(nullable = false, length = 150)
     private String companyName;
+
+    @Column(length = 255)
+    private String address;
 
     @Column(length = 30)
     private String document;

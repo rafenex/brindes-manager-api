@@ -29,6 +29,7 @@ public class CustomerService {
         Customer customer = Customer.builder()
                 .name(request.name())
                 .companyName(request.companyName())
+                .address(request.address())
                 .document(request.document())
                 .email(request.email())
                 .phone(request.phone())
@@ -65,6 +66,7 @@ public class CustomerService {
 
         customer.setName(request.name());
         customer.setCompanyName(request.companyName());
+        customer.setAddress(request.address());
         customer.setDocument(request.document());
         customer.setEmail(request.email());
         customer.setPhone(request.phone());
@@ -128,6 +130,7 @@ public class CustomerService {
                 customer.getId(),
                 customer.getName(),
                 customer.getCompanyName(),
+                customer.getAddress(),
                 customer.getDocument(),
                 customer.getEmail(),
                 customer.getPhone(),
