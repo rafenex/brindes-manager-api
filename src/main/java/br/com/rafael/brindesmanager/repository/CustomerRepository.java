@@ -8,12 +8,17 @@ import java.util.Optional;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
-    List<Customer> findAllByUserIdAndActiveTrueOrderByNameAsc(Long userId);
+    List<Customer> findAllByCompanyIdAndActiveTrueOrderByNameAsc(Long companyId);
 
-    Optional<Customer> findByIdAndUserIdAndActiveTrue(Long id, Long userId);
+    Optional<Customer> findByIdAndCompanyIdAndActiveTrue(
+            Long id,
+            Long companyId
+    );
 
-    List<Customer> findAllByUserIdOrderByNameAsc(Long userId);
+    List<Customer> findAllByCompanyIdOrderByNameAsc(Long companyId);
 
-    Optional<Customer> findByIdAndUserId(Long id, Long userId);
-
+    Optional<Customer> findByIdAndCompanyId(
+            Long id,
+            Long companyId
+    );
 }

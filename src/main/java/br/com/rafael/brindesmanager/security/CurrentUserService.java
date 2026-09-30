@@ -28,4 +28,9 @@ public class CurrentUserService {
     public Long getCurrentUserId() {
         return getCurrentUser().getId();
     }
+
+    public Long getCurrentCompanyId() {
+        return getCurrentUser().getCompany().getId();
+    }
+
 }

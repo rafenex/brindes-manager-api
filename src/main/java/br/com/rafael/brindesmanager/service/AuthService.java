@@ -4,9 +4,11 @@ import br.com.rafael.brindesmanager.dto.request.LoginRequest;
 import br.com.rafael.brindesmanager.dto.request.RegisterRequest;
 import br.com.rafael.brindesmanager.dto.response.AuthResponse;
 import br.com.rafael.brindesmanager.entity.AppUser;
+import br.com.rafael.brindesmanager.entity.Company;
 import br.com.rafael.brindesmanager.enums.UserRole;
 import br.com.rafael.brindesmanager.exception.BusinessException;
 import br.com.rafael.brindesmanager.repository.AppUserRepository;
+import br.com.rafael.brindesmanager.repository.CompanyRepository;
 import br.com.rafael.brindesmanager.security.CustomUserDetails;
 import br.com.rafael.brindesmanager.security.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final CompanyRepository companyRepository;
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
@@ -31,11 +34,18 @@ public class AuthService {
             throw new BusinessException("Já existe um usuário com esse e-mail");
         }
 
+        Company company = Company.builder()
+                .name(request.companyName())
+                .build();
+
+        company = companyRepository.save(company);
+
         AppUser user = AppUser.builder()
                 .name(request.name())
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
-                .role(UserRole.USER)
+                .role(UserRole.ADMIN)
+                .company(company)
                 .build();
 
         AppUser savedUser = appUserRepository.save(user);

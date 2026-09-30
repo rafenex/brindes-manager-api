@@ -8,11 +8,13 @@ import java.util.Optional;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
-    boolean existsByNameIgnoreCase(String name);
+    boolean existsByCompanyIdAndNameIgnoreCase(Long companyId, String name);
 
-    Optional<Category> findByIdAndActiveTrue(Long id);
+    Optional<Category> findByIdAndCompanyIdAndActiveTrue(Long id, Long companyId);
 
-    List<Category> findAllByActiveTrueOrderByNameAsc();
+    List<Category> findAllByCompanyIdAndActiveTrueOrderByNameAsc(Long companyId);
 
-    List<Category> findAllByOrderByNameAsc();
+    List<Category> findAllByCompanyIdOrderByNameAsc(Long companyId);
+
+    Optional<Category> findByIdAndCompanyId(Long id, Long companyId);
 }

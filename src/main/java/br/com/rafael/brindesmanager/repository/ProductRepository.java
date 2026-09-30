@@ -8,13 +8,18 @@ import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    boolean existsByReferenceIgnoreCase(String reference);
+    boolean existsByCompanyIdAndReferenceIgnoreCase(Long companyId, String reference);
 
-    Optional<Product> findByIdAndActiveTrue(Long id);
+    Optional<Product> findByIdAndCompanyIdAndActiveTrue(Long id, Long companyId);
 
-    List<Product> findAllByActiveTrueOrderByNameAsc();
+    List<Product> findAllByCompanyIdAndActiveTrueOrderByNameAsc(Long companyId);
 
-    List<Product> findAllByCategoryIdAndActiveTrueOrderByNameAsc(Long categoryId);
+    List<Product> findAllByCompanyIdAndCategoryIdAndActiveTrueOrderByNameAsc(
+            Long companyId,
+            Long categoryId
+    );
 
-    List<Product> findAllByOrderByNameAsc();
+    List<Product> findAllByCompanyIdOrderByNameAsc(Long companyId);
+
+    Optional<Product> findByIdAndCompanyId(Long id, Long companyId);
 }
