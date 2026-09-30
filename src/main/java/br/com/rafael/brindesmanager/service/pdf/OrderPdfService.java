@@ -98,8 +98,9 @@ public class OrderPdfService {
         table.setWidthPercentage(100);
         table.setWidths(new float[]{1, 2});
 
-        addInfoRow(table, "Nome", order.getCustomer().getName());
-        addInfoRow(table, "Empresa", valueOrDash(order.getCustomer().getCompanyName()));
+        addInfoRow(table, "Empresa", order.getCustomer().getCompanyName());
+        addInfoRow(table, "Nome", valueOrDash(order.getCustomer().getName()));
+        addInfoRow(table, "Endereço", valueOrDash(order.getCustomer().getAddress()));
         addInfoRow(table, "Documento", valueOrDash(order.getCustomer().getDocument()));
         addInfoRow(table, "E-mail", valueOrDash(order.getCustomer().getEmail()));
         addInfoRow(table, "Telefone", valueOrDash(order.getCustomer().getPhone()));
