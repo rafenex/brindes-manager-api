@@ -44,7 +44,7 @@ public class AuthService {
                 .name(request.name())
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
-                .role(UserRole.USER)
+                .role(UserRole.ADMIN)
                 .company(company)
                 .build();
 
