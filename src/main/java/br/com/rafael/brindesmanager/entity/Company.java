@@ -29,9 +29,29 @@ public class Company {
 
     private LocalDateTime updatedAt;
 
+    @Column(length = 255)
+    private String address;
+
+    @Column(length = 160)
+    private String email;
+
+    @Column(length = 30)
+    private String phone;
+
+    @Column(columnDefinition = "bytea")
+    private byte[] logo;
+
+    @Column(name = "logo_content_type", length = 100)
+    private String logoContentType;
+
     @PrePersist
     public void prePersist() {
         this.active = true;
         this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }
