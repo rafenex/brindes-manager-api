@@ -1,5 +1,6 @@
 package br.com.rafael.brindesmanager.service.pdf;
 
+import br.com.rafael.brindesmanager.entity.Company;
 import br.com.rafael.brindesmanager.entity.CustomerOrder;
 import br.com.rafael.brindesmanager.entity.OrderItem;
 import br.com.rafael.brindesmanager.service.CustomerOrderService;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
@@ -36,7 +38,7 @@ public class OrderPdfService {
 
             document.open();
 
-            addHeader(document);
+            addHeader(document, order);
             addOrderInfo(document, order);
             addCustomerInfo(document, order);
             addItemsTable(document, order);
@@ -52,11 +54,21 @@ public class OrderPdfService {
         }
     }
 
-    private void addHeader(Document document) throws DocumentException {
+    private void addHeader(Document document, CustomerOrder order) throws DocumentException, IOException {
+        Company company = order.getCompany();
+        byte[] logo = company.getLogo();
+        if (logo != null && logo.length > 0) {
+            Image logoImage = Image.getInstance(logo);
+            logoImage.scaleToFit(120, 60);
+            logoImage.setSpacingAfter(8);
+            logoImage.setAlignment(Element.ALIGN_CENTER);
+            document.add(logoImage);
+        }
+
         Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
         Font subtitleFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
 
-        Paragraph title = new Paragraph("DVR BRINDES", titleFont);
+        Paragraph title = new Paragraph(company.getName(), titleFont);
         title.setAlignment(Element.ALIGN_CENTER);
         document.add(title);
 
