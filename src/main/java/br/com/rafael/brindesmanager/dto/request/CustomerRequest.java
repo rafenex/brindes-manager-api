@@ -1,5 +1,6 @@
 package br.com.rafael.brindesmanager.dto.request;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -13,8 +14,13 @@ public record CustomerRequest(
         @Size(max = 150, message = "O nome da empresa deve ter no máximo 150 caracteres")
         String companyName,
 
-        @Size(max = 255, message = "O endereço deve ter no máximo 255 caracteres")
-        String address,
+        @JsonDeserialize(using = AddressTextDeserializer.class) String postalCode,
+        @JsonDeserialize(using = AddressTextDeserializer.class) String street,
+        @JsonDeserialize(using = AddressTextDeserializer.class) String number,
+        @JsonDeserialize(using = AddressTextDeserializer.class) String complement,
+        @JsonDeserialize(using = AddressTextDeserializer.class) String neighborhood,
+        @JsonDeserialize(using = AddressTextDeserializer.class) String city,
+        @JsonDeserialize(using = AddressTextDeserializer.class) String state,
 
         @Size(max = 30, message = "O documento deve ter no máximo 30 caracteres")
         String document,

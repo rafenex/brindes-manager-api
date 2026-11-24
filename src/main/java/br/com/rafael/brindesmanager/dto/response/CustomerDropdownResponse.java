@@ -4,7 +4,13 @@ public record CustomerDropdownResponse(
         Long id,
         String name,
         String companyName,
-        String address,
+        String postalCode,
+        String street,
+        String number,
+        String complement,
+        String neighborhood,
+        String city,
+        String state,
         Boolean active
 ) {
 }

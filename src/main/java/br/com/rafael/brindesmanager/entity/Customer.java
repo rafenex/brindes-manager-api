@@ -24,8 +24,26 @@ public class Customer {
     @Column(nullable = false, length = 150)
     private String companyName;
 
-    @Column(length = 255)
-    private String address;
+    @Column(name = "postal_code", columnDefinition = "TEXT")
+    private String postalCode;
+
+    @Column(name = "street", columnDefinition = "TEXT")
+    private String street;
+
+    @Column(name = "address_number", columnDefinition = "TEXT")
+    private String number;
+
+    @Column(name = "address_complement", columnDefinition = "TEXT")
+    private String complement;
+
+    @Column(name = "neighborhood", columnDefinition = "TEXT")
+    private String neighborhood;
+
+    @Column(name = "city", columnDefinition = "TEXT")
+    private String city;
+
+    @Column(name = "state", columnDefinition = "TEXT")
+    private String state;
 
     @Column(length = 30)
     private String document;
