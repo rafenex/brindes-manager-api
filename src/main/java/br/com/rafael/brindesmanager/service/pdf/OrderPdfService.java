@@ -1,6 +1,7 @@
 package br.com.rafael.brindesmanager.service.pdf;
 
 import br.com.rafael.brindesmanager.entity.Company;
+import br.com.rafael.brindesmanager.entity.Customer;
 import br.com.rafael.brindesmanager.entity.CustomerOrder;
 import br.com.rafael.brindesmanager.entity.OrderItem;
 import br.com.rafael.brindesmanager.service.CustomerOrderService;
@@ -18,6 +19,8 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -112,7 +115,7 @@ public class OrderPdfService {
 
         addInfoRow(table, "Empresa", order.getCustomer().getCompanyName());
         addInfoRow(table, "Nome", valueOrDash(order.getCustomer().getName()));
-        addInfoRow(table, "Endereço", valueOrDash(order.getCustomer().getAddress()));
+        addInfoRow(table, "Endereço", formatCustomerAddress(order.getCustomer()));
         addInfoRow(table, "Documento", valueOrDash(order.getCustomer().getDocument()));
         addInfoRow(table, "E-mail", valueOrDash(order.getCustomer().getEmail()));
         addInfoRow(table, "Telefone", valueOrDash(order.getCustomer().getPhone()));
@@ -233,6 +236,36 @@ public class OrderPdfService {
         }
 
         return NumberFormat.getCurrencyInstance(PT_BR).format(value);
+    }
+
+    private String formatCustomerAddress(Customer customer) {
+        List<String> parts = new ArrayList<>();
+        String street = text(customer.getStreet());
+        String number = text(customer.getNumber());
+        addPart(parts, street.isEmpty() ? number : number.isEmpty() ? street : street + ", " + number);
+        addPart(parts, text(customer.getComplement()));
+        addPart(parts, text(customer.getNeighborhood()));
+        String city = text(customer.getCity());
+        String state = text(customer.getState());
+        addPart(parts, city.isEmpty() ? state : state.isEmpty() ? city : city + "/" + state);
+        String postalCode = text(customer.getPostalCode());
+        if (postalCode.matches("[0-9]{8}")) {
+            postalCode = postalCode.substring(0, 5) + "-" + postalCode.substring(5);
+        }
+        if (!postalCode.isEmpty()) {
+            parts.add("CEP " + postalCode);
+        }
+        return valueOrDash(String.join(" — ", parts));
+    }
+
+    private void addPart(List<String> parts, String value) {
+        if (!value.isEmpty()) {
+            parts.add(value);
+        }
+    }
+
+    private String text(String value) {
+        return value == null || value.isBlank() ? "" : value;
     }
 
     private String valueOrDash(String value) {

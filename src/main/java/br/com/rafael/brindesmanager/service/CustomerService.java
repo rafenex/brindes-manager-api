@@ -29,7 +29,13 @@ public class CustomerService {
         Customer customer = Customer.builder()
                 .name(request.name())
                 .companyName(request.companyName())
-                .address(request.address())
+                .postalCode(request.postalCode())
+                .street(request.street())
+                .number(request.number())
+                .complement(request.complement())
+                .neighborhood(request.neighborhood())
+                .city(request.city())
+                .state(request.state())
                 .document(request.document())
                 .email(request.email())
                 .phone(request.phone())
@@ -66,7 +72,13 @@ public class CustomerService {
 
         customer.setName(request.name());
         customer.setCompanyName(request.companyName());
-        customer.setAddress(request.address());
+        customer.setPostalCode(request.postalCode());
+        customer.setStreet(request.street());
+        customer.setNumber(request.number());
+        customer.setComplement(request.complement());
+        customer.setNeighborhood(request.neighborhood());
+        customer.setCity(request.city());
+        customer.setState(request.state());
         customer.setDocument(request.document());
         customer.setEmail(request.email());
         customer.setPhone(request.phone());
@@ -110,7 +122,13 @@ public class CustomerService {
                         customer.getId(),
                         customer.getName(),
                         customer.getCompanyName(),
-                        customer.getAddress(),
+                        customer.getPostalCode(),
+                        customer.getStreet(),
+                        customer.getNumber(),
+                        customer.getComplement(),
+                        customer.getNeighborhood(),
+                        customer.getCity(),
+                        customer.getState(),
                         customer.getActive()
                 ))
                 .toList();
@@ -131,7 +149,13 @@ public class CustomerService {
                 customer.getId(),
                 customer.getName(),
                 customer.getCompanyName(),
-                customer.getAddress(),
+                customer.getPostalCode(),
+                customer.getStreet(),
+                customer.getNumber(),
+                customer.getComplement(),
+                customer.getNeighborhood(),
+                customer.getCity(),
+                customer.getState(),
                 customer.getDocument(),
                 customer.getEmail(),
                 customer.getPhone(),

@@ -3,6 +3,7 @@ package br.com.rafael.brindesmanager.exception;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,6 +14,22 @@ import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiErrorResponse> handleUnreadableRequest(HttpMessageNotReadableException ex) {
+        return ResponseEntity.badRequest().body(new ApiErrorResponse(
+                LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), "Bad Request",
+                List.of("Corpo da requisição inválido")
+        ));
+    }
+
+    @ExceptionHandler(PostalCodeIntegrationException.class)
+    public ResponseEntity<ApiErrorResponse> handlePostalCodeIntegration(PostalCodeIntegrationException ex) {
+        HttpStatus status = ex.isTimeout() ? HttpStatus.GATEWAY_TIMEOUT : HttpStatus.SERVICE_UNAVAILABLE;
+        return ResponseEntity.status(status).body(new ApiErrorResponse(
+                LocalDateTime.now(), status.value(), status.getReasonPhrase(), List.of(ex.getMessage())
+        ));
+    }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleNotFound(NotFoundException ex) {
