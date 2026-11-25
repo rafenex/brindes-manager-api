@@ -12,6 +12,8 @@ import com.lowagie.text.pdf.parser.PdfTextExtractor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -23,6 +25,14 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class OrderPdfServiceTest {
+    @ParameterizedTest
+    @CsvSource({"PAID,Pago", "BUDGET,Orçamento", "APPROVED,Aprovado",
+            "IN_PRODUCTION,Em produção", "DELIVERED,Entregue", "CANCELED,Cancelado"})
+    void presentsTheCurrentStatusInThePdf(OrderStatus status, String label) throws Exception {
+        order.setStatus(status);
+        assertThat(generatedText().replaceAll("\\s+", " ")).contains("Status " + label);
+    }
+
     @Mock CustomerOrderService orders;
     private OrderPdfService service;
     private Customer customer;
