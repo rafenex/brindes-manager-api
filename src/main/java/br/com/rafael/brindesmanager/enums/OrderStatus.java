@@ -9,7 +9,8 @@ public enum OrderStatus {
     APPROVED("Aprovado"),
     IN_PRODUCTION("Em produção"),
     DELIVERED("Entregue"),
-    CANCELED("Cancelado");
+    CANCELED("Cancelado"),
+    PAID("Pago");
 
     private final String description;
 
