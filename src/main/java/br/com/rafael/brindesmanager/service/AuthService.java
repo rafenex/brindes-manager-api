@@ -64,17 +64,15 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public AuthResponse login(LoginRequest request) {
-        authenticationManager.authenticate(
+        var authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.email(),
                         request.password()
                 )
         );
 
-        AppUser user = appUserRepository.findByEmailIgnoreCaseAndActiveTrue(request.email())
-                .orElseThrow(() -> new BusinessException("E-mail ou senha inválidos"));
-
-        CustomUserDetails userDetails = new CustomUserDetails(user);
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        AppUser user = userDetails.getUser();
         String token = jwtService.generateToken(userDetails);
 
         return new AuthResponse(

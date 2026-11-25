@@ -14,6 +14,12 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final AppUserRepository appUserRepository;
 
+    public CustomUserDetails loadActiveUserById(Long id) {
+        return appUserRepository.findByIdAndActiveTrue(id)
+                .map(CustomUserDetails::new)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+    }
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         AppUser user = appUserRepository.findByEmailIgnoreCaseAndActiveTrue(email)

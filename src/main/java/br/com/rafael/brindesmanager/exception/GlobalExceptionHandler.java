@@ -1,6 +1,8 @@
 package br.com.rafael.brindesmanager.exception;
 
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -41,6 +43,25 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiErrorResponse> handleAccessDenied(AccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiErrorResponse(
+                LocalDateTime.now(), 403, "Forbidden", List.of(ex.getMessage())
+        ));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiErrorResponse> handleDataIntegrity(DataIntegrityViolationException ex) {
+        for (Throwable cause = ex.getCause(); cause != null; cause = cause.getCause()) {
+            if (cause instanceof org.hibernate.exception.ConstraintViolationException violation
+                    && ("uk_app_users_email_upper".equals(violation.getConstraintName())
+                    || "app_users_email_key".equals(violation.getConstraintName()))) {
+                return handleBusiness(new BusinessException("Já existe um usuário com esse e-mail"));
+            }
+        }
+        throw ex;
     }
 
     @ExceptionHandler(BusinessException.class)

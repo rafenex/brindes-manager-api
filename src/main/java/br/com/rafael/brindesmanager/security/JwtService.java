@@ -2,6 +2,7 @@ package br.com.rafael.brindesmanager.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -36,20 +37,13 @@ public class JwtService {
                 .compact();
     }
 
-    public String extractUsername(String token) {
-        return extractAllClaims(token).getSubject();
-    }
-
-    public boolean isTokenValid(String token, CustomUserDetails userDetails) {
-        String username = extractUsername(token);
-
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
-    }
-
-    private boolean isTokenExpired(String token) {
-        Date expiration = extractAllClaims(token).getExpiration();
-
-        return expiration.before(new Date());
+    public Long extractUserId(String token) {
+        Claims claims = extractAllClaims(token);
+        Long userId = claims.get("userId", Long.class);
+        if (userId == null || userId <= 0 || claims.getExpiration() == null) {
+            throw new JwtException("Token sem identidade ou expiração válida");
+        }
+        return userId;
     }
 
     private Claims extractAllClaims(String token) {

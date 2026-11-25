@@ -14,14 +14,18 @@ public class CurrentUserService {
 
     private final AppUserRepository appUserRepository;
 
-    public AppUser getCurrentUser() {
+    public CustomUserDetails getAuthenticatedPrincipal() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails customUserDetails)) {
             throw new BusinessException("Usuário não autenticado");
         }
 
-        return appUserRepository.findByIdAndActiveTrue(customUserDetails.getId())
+        return customUserDetails;
+    }
+
+    public AppUser getCurrentUser() {
+        return appUserRepository.findByIdAndActiveTrue(getAuthenticatedPrincipal().getId())
                 .orElseThrow(() -> new BusinessException("Usuário autenticado não encontrado"));
     }
 
