@@ -84,7 +84,7 @@ class CustomerAddressMvcIntegrationTest {
 
     @Test
     void invalidJwtKeepsExistingUnauthorizedResponse() throws Exception {
-        when(jwtService.extractUsername("bad")).thenThrow(new JwtException("expired"));
+        when(jwtService.extractUserId("bad")).thenThrow(new JwtException("expired"));
         mvc.perform(get("/api/postal-codes/01001000").header("Authorization", "Bearer bad"))
                 .andExpect(status().isUnauthorized());
     }

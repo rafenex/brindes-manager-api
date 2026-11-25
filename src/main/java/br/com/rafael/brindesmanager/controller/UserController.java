@@ -1,6 +1,7 @@
 package br.com.rafael.brindesmanager.controller;
 
 import br.com.rafael.brindesmanager.dto.request.CreateUserRequest;
+import br.com.rafael.brindesmanager.dto.request.UpdateUserRequest;
 import br.com.rafael.brindesmanager.dto.response.UserResponse;
 import br.com.rafael.brindesmanager.service.UserService;
 import jakarta.validation.Valid;
@@ -23,6 +24,22 @@ public class UserController {
             @RequestBody @Valid CreateUserRequest request
     ) {
         return userService.create(request);
+    }
+
+    @GetMapping("/{id}")
+    public UserResponse findForEdit(@PathVariable Long id) {
+        return userService.findForEdit(id);
+    }
+
+    @PutMapping("/{id}")
+    public UserResponse update(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest request) {
+        return userService.update(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        userService.delete(id);
     }
 
     @GetMapping

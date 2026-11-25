@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -38,37 +38,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             String token = authorizationHeader.substring(7);
-            String username = jwtService.extractUsername(token);
-
-            if (username != null
-                    && SecurityContextHolder.getContext().getAuthentication() == null) {
-
-                UserDetails userDetails =
-                        userDetailsService.loadUserByUsername(username);
-
-                if (userDetails instanceof CustomUserDetails customUserDetails
-                        && jwtService.isTokenValid(token, customUserDetails)) {
-
-                    UsernamePasswordAuthenticationToken authenticationToken =
-                            new UsernamePasswordAuthenticationToken(
-                                    customUserDetails,
-                                    null,
-                                    customUserDetails.getAuthorities()
-                            );
-
-                    authenticationToken.setDetails(
-                            new WebAuthenticationDetailsSource()
-                                    .buildDetails(request)
-                    );
-
-                    SecurityContextHolder.getContext()
-                            .setAuthentication(authenticationToken);
-                }
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                CustomUserDetails user = userDetailsService.loadActiveUserById(jwtService.extractUserId(token));
+                var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-
-            filterChain.doFilter(request, response);
-
-        } catch (JwtException | IllegalArgumentException ex) {
+        } catch (JwtException | IllegalArgumentException | UsernameNotFoundException ex) {
 
             SecurityContextHolder.clearContext();
 
@@ -83,6 +59,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                       "message": "Token inválido ou expirado"
                     }
                     """);
+            return;
         }
+
+        filterChain.doFilter(request, response);
     }
 }

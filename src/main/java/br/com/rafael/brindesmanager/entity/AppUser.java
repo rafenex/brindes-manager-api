@@ -40,6 +40,8 @@ public class AppUser {
 
     private LocalDateTime updatedAt;
 
+    private LocalDateTime deletedAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;

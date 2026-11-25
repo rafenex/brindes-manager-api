@@ -1,8 +1,11 @@
-.git/
-.env*
-*.log*
+.git
+Dockerfile*
+.dockerignore
 target/
 node_modules/
 coverage/
-Dockerfile*
-.dockerignore
+*.log*
+.env*
+.idea/
+.vscode/
+*.pem
